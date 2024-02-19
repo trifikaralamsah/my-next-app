@@ -1,6 +1,10 @@
-import { getData } from "@/services";
+"use client";
+
+// import { getData } from "@/services";
+import { fetcher } from "@/services";
 import Image from "next/image";
 import Link from "next/link";
+import useSWR from "swr";
 
 type ProductPageProps = { params: { slug: string[] } };
 
@@ -37,15 +41,29 @@ type ProductPageProps = { params: { slug: string[] } };
 //   return res.json();
 // }
 
-export default async function ProductPage(props: ProductPageProps) {
+export default function ProductPage(props: ProductPageProps) {
   const { params } = props;
-  const { products } = await getData("http://localhost:3000/api/product");
-  console.log(products);
+  // const { products } = await getData(
+  //   `${process.env.NEXT_PUBLIC_BASE_URL}/api/product`
+  // );
+
+  // untuk build di useswr jalan disini
+  const { data, error, isLoading } = useSWR(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/api/product`,
+    fetcher
+  );
+
+  const products = {
+    data: data?.products || [],
+    error,
+    isLoading,
+  };
+
   return (
     <div className="grid grid-cols-4 mt-3 gap-5 place-items-center mx-5">
       {/* <h1>{params.slug ? "Detail Product Page" : "Product Page"}</h1> */}
-      {products.length > 0 &&
-        products.map((product: any) => {
+      {products?.data.length > 0 &&
+        products?.data.map((product: any) => {
           return (
             <Link
               href={`/product/detail/${product.id}`}

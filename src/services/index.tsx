@@ -30,3 +30,6 @@ export const getData = async (url: string) => {
 
   return res.json();
 };
+
+// useSwr
+export const fetcher = (url: string) => fetch(url).then((res) => res.json());
